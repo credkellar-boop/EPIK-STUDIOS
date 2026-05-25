@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPIC-STUDIO'S // Web Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0B0B0C; }
+    </style>
+</head>
+<body class="text-gray-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <header class="border-b border-gray-800 bg-[#121214] px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <h1 class="text-xl font-black tracking-widest text-blue-500">EPIC-STUDIO'S</h1>
+            <span class="bg-blue-500/10 text-blue-400 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-blue-500/20">Gemini Web v2.0</span>
+        </div>
+        <div class="text-sm text-gray-500 font-mono">Status: Connected to Engine</div>
+    </header>
+
+    <main class="flex-grow max-w-5xl w-full mx-auto p-6 lg:p-8 space-y-6">
+        
+        <div class="bg-[#121214] border border-gray-800 rounded-xl p-6 shadow-2xl">
+            <h2 class="text-lg font-bold mb-1 text-white">AI Automation Pipeline</h2>
+            <p class="text-sm text-gray-400 mb-6">Describe your target DAW logic or macros. Gemini will process live GitHub methods to generate the production extension code.</p>
+
+            <form action="/compile" method="POST" class="space-y-4">
+                <div>
+                    <label for="prompt" class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Prompt Directives</label>
+                    <textarea id="prompt" name="prompt" rows="3" 
+                        class="w-full bg-[#18181C] border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-medium"
+                        placeholder="Type script goal here...">{{ initial_val }}</textarea>
+                </div>
+                
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm tracking-wide py-3 px-4 rounded-lg shadow-lg transition duration-200 ease-in-out transform active:scale-[0.99]">
+                    COMPILE VIA GEMINI & GITHUB TRENDS
+                </button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="bg-[#121214] border border-gray-800 rounded-xl p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2 animate-pulse"></span>
+                    Compiled Extension Module
+                </h3>
+            </div>
+            <pre class="bg-black text-emerald-500 p-4 rounded-lg font-mono text-sm overflow-x-auto border border-gray-900 max-h-[450px] whitespace-pre-wrap">{{ result }}</pre>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <footer class="border-t border-gray-800 py-4 text-center text-xs text-gray-600 font-mono">
+        &copy; 2026 EPIC-STUDIO'S Engine Ecosystem. Distributed Open-Source Infrastructure.
+    </footer>
+
+</body>
+</html>
