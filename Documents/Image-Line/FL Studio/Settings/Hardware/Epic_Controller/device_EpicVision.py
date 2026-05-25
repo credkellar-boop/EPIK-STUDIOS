@@ -71,3 +71,42 @@ def OnMidiMsg(event):
             plugins.setParamValue(val, 21, ZGAME_SLOT_INDEX, ZGAME_MIXER_TRACK)
             event.handled = True
 
+import flpianoroll
+import random
+import math
+
+def createDialog():
+    form = flpianoroll.ScriptDialog("EPIC-STUDIO'S // Elite Symphonic Driver", "Applies emotional expressions and micor-timing to orchestral arrays.")
+    form.addInputKnob("Crescendo Intensity", 75, 10, 100)
+    form.addInputKnob("Human Musician Variance", 12, 0, 30)
+    return form
+
+def apply(form):
+    intensity = form.getInputValue("Crescendo Intensity") / 100.0
+    variance = form.getInputValue("Human Musician Variance")
+    
+    score = flpianoroll.score
+    if not score.noteCount:
+        return
+
+    # Sort notes from earliest to latest so the crescendo evolves over time
+    notes = [score.getNote(i) for i in range(score.noteCount)]
+    notes.sort(key=lambda x: x.time)
+    
+    total_duration = notes[-1].time - notes[0].time if len(notes) > 1 else 1
+
+    for note in notes:
+        # Calculate where this specific note falls in the timeline (0.0 to 1.0)
+        relative_position = (note.time - notes[0].time) / max(1, total_duration)
+        
+        # Apply an exponential curve to the velocity to simulate brass or strings building tension
+        crescendo_curve = math.pow(relative_position, 2) * intensity
+        
+        # Introduce micro-timing imperfections so the 'musicians' don't hit the notes at the exact microsecond
+        human_offset = random.randint(-int(variance), int(variance))
+        note.time = max(0, note.time + human_offset)
+        
+        # Blend the structural crescendo with a subtle touch of human randomness
+        random_expressiveness = random.uniform(-0.08, 0.08)
+        note.velocity = max(0.15, min(1.0, crescendo_curve + random_expressiveness))
+        
