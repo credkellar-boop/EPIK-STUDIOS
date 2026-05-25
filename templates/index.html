@@ -60,3 +60,9 @@
 
 </body>
 </html>
+        {% if export_status %}
+        <div class="bg-[#18181C] border {% if 'ERROR' in export_status %}border-red-500/30 text-red-400 bg-red-500/5{% else %}border-blue-500/30 text-blue-400 bg-blue-500/5{% endif %} rounded-xl p-4 font-mono text-xs whitespace-pre-wrap">
+            {{ export_status }}
+        </div>
+        {% endif %}
+        
