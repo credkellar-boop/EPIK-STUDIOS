@@ -1,41 +1,52 @@
 import json
 from google import genai
 from google.genai import types
-from scraper import get_latest_midi_methods
 
-def run_epic_engine(user_prompt: str):
+# Initialize the Gemini Client
+# Ensure your GEMINI_API_KEY environment variable is configured in your system
+client = genai.Client()
+
+def get_cinematic_matrix(project_bpm: float) -> dict:
     """
-    Main orchestration block. Combines local configuration state, 
-    live GitHub scraper trends, and Gemini to generate dynamic code assets.
+    Calculates exact alignment variables to sync audio transitions 
+    perfectly with 23.976 FPS industry-standard film cut markers.
     """
-    # Load settings from configuration file
-    with open('config.json', 'r') as f:
-        config = json.load(f)
-        
-    system_settings = config.get("system_settings", {})
+    fps = 23.976
+    seconds_per_beat = 60.0 / project_bpm
+    seconds_per_bar = seconds_per_beat * 4  # Assuming standard 4/4 time signature
+    frames_per_bar = seconds_per_bar * fps
     
-    # Gather live developer context from GitHub
-    github_context = get_latest_midi_methods()
-    
-    # Initialize the client API
-    client = genai.Client()
+    return {
+        "seconds_per_bar": round(seconds_per_bar, 4),
+        "frames_per_bar": round(frames_per_bar, 3),
+        "sample_rate_target": "96,000 Hz",
+        "audio_bit_depth": "32-Bit Float"
+    }
+
+def compile_epic_studio_macro(user_intent: str, project_bpm: float = 80.0):
+    """
+    Blends absolute engineering specifications with Gemini Pro 2.5 
+    to generate native FL Studio engine scripts.
+    """
+    matrix = get_cinematic_matrix(project_bpm)
     
     system_instruction = f"""
-    You are the primary computing mind of EPIC-STUDIO'S. 
-    Your mission is to construct operational Python code modules tailored to FL Studio.
-    Current System Global State:
-    - Reference Frequency: {system_settings.get('target_tuning_reference_hz')}Hz
-    - Active Scale Blueprint: {system_settings.get('default_scale_signature')}
-    Return only pristine code output wrapped inside standard markdown code formatting blocks.
+    You are the primary computing mind of EPIC-STUDIO'S. Your objective is to engineer 
+    operational Python modules tailored exclusively for FL Studio.
+    
+    Current Master Project Constraints:
+    - Target Audio Standards: {matrix['sample_rate_target']} at {matrix['audio_bit_depth']} (Studio Master)
+    - Film Grid Synchronization: {matrix['frames_per_bar']} frames per musical bar at 23.976 FPS
+    
+    Provide ONLY valid Python code blocks wrapped in standard markdown code formatting. No conversational filler.
     """
     
     prompt = f"""
-    Recent engineering patterns scraped from GitHub:
-    {github_context}
+    User Creative Request: {user_intent}
+    Mathematical Sync Link: Each bar must align exactly with {matrix['frames_per_bar']} film frames.
     
-    User Directive: {user_prompt}
-    
-    Instruction: Generate an optimized FL Studio extension module matching the user directive.
+    Task: Write an optimized FL Studio script utilizing the 'flpianoroll' or native hardware APIs 
+    to perfectly satisfy this directive.
     """
     
     response = client.models.generate_content(
@@ -43,14 +54,13 @@ def run_epic_engine(user_prompt: str):
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=system_instruction,
-            temperature=0.2
+            temperature=0.15
         )
     )
     
     return response.text
 
 if __name__ == "__main__":
-    # Test executing an auto-tone initialization call
-    test_intent = "Create an active MIDI processing script that maps incoming CC modulations to parametric band-pass filters."
-    output_script = run_epic_engine(test_intent)
-    print(output_script)
+    # Test compiling a top-tier orchestral crescendo request
+    test_request = "Generate a piano roll script that applies an exponential velocity crescendo and adds micro-timing humanization."
+    print(compile_epic_studio_macro(test_request, project_bpm=80.0))
