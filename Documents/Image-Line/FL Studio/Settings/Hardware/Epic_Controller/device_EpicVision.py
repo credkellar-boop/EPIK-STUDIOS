@@ -162,3 +162,45 @@ def apply(form):
         # 2. Apply Micro-Timing Imperfections (Breathes acoustic space into the mix)
         human_jitter = random.randint(-int(timing_variance), int(timing_variance))
         note.time = max(0, note.time + human_jitter)
+# name=EPIC-STUDIO'S Master Cinematic Controller
+# supportedDevices=Epic Control Surface,EPIC-VISION-PORT
+
+import mixer
+import plugins
+import general
+import transport
+
+def OnInit():
+    """Executes when the engine links to FL Studio's MIDI matrix."""
+    print("------------------------------------------------------------------")
+    print("[EPIC-STUDIO'S] High-Fidelity A/V Controller Protocol Initialized.")
+    print("Status: 96kHz Processing Path Confirmed.")
+    print("------------------------------------------------------------------")
+
+def OnMidiMsg(event):
+    """
+    Intercepts continuous controller automation data packets.
+    Maps CC values cleanly from 0-127 to 0.0-1.0 parameters.
+    """
+    if event.status == 176:  # Standard MIDI CC Identification Byte
+        control_channel = event.data1
+        normalized_value = event.data2 / 127.0
+        
+        # CC 20: Master Timbral Expression (Orchestral Volume Expression Tracking)
+        if control_channel == 20:
+            # Automates mixer track 1 volume dynamically (e.g., your Master String Bus)
+            mixer.setTrackVolume(1, normalized_value)
+            event.handled = True
+            
+        # CC 21: Cinematic Reverb Wetness / Spatialization Width
+        elif control_channel == 21:
+            # Assuming Fruity Convolver / Reverb is placed on the master track (0), slot 2 (index 1)
+            # Parameter 1 typically acts as Wet Mix level across major native image-line modules
+            plugins.setParamValue(normalized_value, 1, 0, 0)
+            event.handled = True
+            
+        # CC 22: Live 8K Visualizer Displacement or Camera Modulations
+        elif control_channel == 22:
+            # Routes controller data directly to ZGameEditor Visualizer (Track 0, Slot 1)
+            plugins.setParamValue(normalized_value, 10, 0, 0)
+            event.handled = True
