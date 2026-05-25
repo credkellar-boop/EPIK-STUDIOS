@@ -1,1 +1,31 @@
 
+{
+  "system_settings": {
+    "fl_user_data_path": "C:/Users/YourName/Documents/Image-Line/FL Studio/Settings",
+    "project_workspace_root": "./workspace",
+    "log_compilations": true
+  },
+  "industry_audio_specifications": {
+    "target_sample_rate_hz": 96000,
+    "bit_depth_rendering": "32_BIT_FLOAT",
+    "resampling_quality_sinc_points": 512,
+    "master_bus_headroom_db": -1.0,
+    "linear_phase_eq_enabled": true
+  },
+  "cinematic_video_specifications": {
+    "target_resolution": "7680x4320_8K_UHD",
+    "frame_rate_fps": 23.976,
+    "video_export_bitrate_mbps": 150,
+    "color_space_profile": "Rec_2020_HDR",
+    "audio_container_codec": "PCM_24BIT_UNCOMPRESSED"
+  },
+  "github_pipeline": {
+    "search_queries": [
+      "flstudio python scripting",
+      "zgameeditor visualizer automation",
+      "midi controller api orchestration"
+    ],
+    "results_limit": 5,
+    "auto_update_context": true
+  }
+}
