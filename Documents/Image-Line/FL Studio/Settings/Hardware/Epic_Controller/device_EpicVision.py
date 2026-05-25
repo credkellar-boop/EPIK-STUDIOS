@@ -204,3 +204,149 @@ def OnMidiMsg(event):
             # Routes controller data directly to ZGameEditor Visualizer (Track 0, Slot 1)
             plugins.setParamValue(normalized_value, 10, 0, 0)
             event.handled = True
+import flpianoroll
+import math
+import random
+
+def createDialog():
+    form = flpianoroll.ScriptDialog("EPIC-STUDIO'S // Cinematic Drum Roll", "Chops a single sustained note into a dynamic, panning orchestral roll.")
+    form.addInputCombo("Roll Style", "Accelerando (Speed Up),Ritardando (Slow Down),Linear Constant", 0)
+    form.addInputKnob("Density / Note Count", 16, 4, 64)
+    form.addInputKnob("Velocity Swell Depth", 90, 10, 100)
+    form.addInputCombo("Stereo Panning Sweep", "Left to Right,Right to Left,Center Only", 0)
+    return form
+
+def apply(form):
+    roll_style = form.getInputValue("Roll Style")
+    total_notes = int(form.getInputValue("Density / Note Count"))
+    swell_depth = form.getInputValue("Velocity Swell Depth") / 100.0
+    pan_style = form.getInputValue("Stereo Panning Sweep")
+    
+    score = flpianoroll.score
+    if not score.noteCount:
+        return
+
+    # Grab the target note to use as a structural boundary template
+    target_note = score.getNote(0)
+    start_time = target_note.time
+    total_length = target_note.length
+    note_number = target_note.number
+    
+    # Clear the placeholder note so we can write the roll array cleanly
+    score.clear()
+
+    current_time = start_time
+    remaining_length = total_length
+
+    for i in range(total_notes):
+        progress = i / float(total_notes - 1) if total_notes > 1 else 0.0
+        
+        # 1. Calculate Note Spacing (Rhythmic Shifting)
+        if roll_style == 0:    # Accelerando: Notes start long and get tighter
+            # Exponentially scaling down the note duration factor
+            factor = (math.pow(1.0 - progress, 2) + 0.1)
+        elif roll_style == 1:  # Ritardando: Notes start fast and widen out
+            factor = (math.pow(progress, 2) + 0.1)
+        else:                  # Linear Constant Grid
+            factor = 1.0
+
+        # Set specific note length based on the calculation factor
+        base_step = total_length / total_notes
+        current_note_length = int(base_step * factor)
+        if current_note_length < 10: 
+            current_note_length = 10 # Protect against zero-length notes crashing the DAW
+
+        # 2. Dynamic Structural Positioning
+        new_note = flpianoroll.Note()
+        new_note.number = note_number
+        new_note.time = int(current_time)
+        new_note.length = current_note_length
+        
+        # 3. Industry Volume Swell Automation
+        new_note.velocity = max(0.1, min(1.0, math.pow(progress, 1.5) * swell_depth + random.uniform(-0.05, 0.05)))
+        
+        # 4. Immersive Stereo Spatialization Panning
+        if pan_style == 0:    # Left to Right Sweep
+            new_note.pan = 0.1 + (progress * 0.8)
+        elif pan_style == 1:  # Right to Left Sweep
+            new_note.pan = 0.9 - (progress * 0.8)
+        else:                  # Solid Center Mono
+            new_note.pan = 0.5
+            
+        score.addNote(new_note)
+        
+        # Advance the pointer timeline position for the next note
+        current_time += current_note_length
+        if current_time >= (start_time + total_length):
+            break
+import flpianoroll
+import random
+
+def createDialog():
+    form = flpianoroll.ScriptDialog("EPIC-STUDIO'S // Elite Bass Stutter", "Generates complex 808 trap/cinematic bass sub-divisions with pitch slides.")
+    form.addInputCombo("Rhythmic Subdivision", "1/16 Notes,1/32 Notes,Triplet Glitch Mesh", 0)
+    form.addInputKnob("Pitch Slide Probability (%)", 25, 0, 100)
+    form.addInputKnob("Octave Jump Multiplier", 1, 0, 2)
+    form.addInputCombo("Velocity Velocity Gating", "None,Decaying Falloff,Stutter Gaps", 1)
+    return form
+
+def apply(form):
+    subdivision = form.getInputValue("Rhythmic Subdivision")
+    slide_prob = form.getInputValue("Pitch Slide Probability (%)") / 100.0
+    octave_jump = int(form.getInputValue("Octave Jump Multiplier"))
+    gate_style = form.getInputValue("Velocity Velocity Gating")
+    
+    score = flpianoroll.score
+    if not score.noteCount:
+        return
+
+    # Utilize PPQ (Ticks per Quarter Note) to lock timing exactly to the DAW project tempo
+    ppq = score.PPQ
+    
+    # Define exact timing intervals based on project grid constraints
+    if subdivision == 0:
+        step_ticks = ppq // 4   # 1/16 Note Grid
+    elif subdivision == 1:
+        step_ticks = ppq // 8   # 1/32 Note Grid
+    else:
+        step_ticks = ppq // 6   # 1/12 Triplet Grid
+
+    target_note = score.getNote(0)
+    start_time = target_note.time
+    total_length = target_note.length
+    base_pitch = target_note.number
+    
+    score.clear()
+    
+    num_steps = total_length // step_ticks
+    
+    for i in range(num_steps):
+        progress = i / float(num_steps)
+        
+        # Stutter Gaps Mode: Randomly drops notes to create hard syncopation
+        if gate_style == 2 and random.random() < 0.25:
+            continue
+            
+        new_note = flpianoroll.Note()
+        new_note.time = start_time + (i * step_ticks)
+        new_note.length = step_ticks - 2 # Tiny micro-gap to prevent note overlapping
+        
+        # Handle pitch changes: occasionally pitch up an octave on rolls for energy
+        if octave_jump > 0 and random.random() < 0.3:
+            new_note.number = base_pitch + (12 * octave_jump)
+        else:
+            new_note.number = base_pitch
+            
+        # Apply standard industry velocity models
+        if gate_style == 1:  # Decaying Falloff
+            new_note.velocity = 0.9 - (progress * 0.5)
+        else:                # Solid Full Impact
+            new_note.velocity = 0.85
+            
+        # Hook into native FL Studio pitch sliding properties
+        if random.random() < slide_prob and i < (num_steps - 1):
+            new_note.slide = True
+            # Raise the destination note pitch of the slide by a perfect fifth or octave
+            new_note.number = base_pitch + random.choice([7, 12])
+            
+        score.addNote(new_note)
