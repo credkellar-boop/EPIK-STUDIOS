@@ -19,3 +19,13 @@ EPIC-STUDIO'S is an AI automation layer for FL Studio. Powered by Gemini, it aut
  │  │ (Auto-Loaded via Python)│   │  (Generated Notes) │  │
  │  └─────────────────────────┘   └────────────────────┘  │
  └────────────────────────────────────────────────────────┘
+EPIC-STUDIOS/
+├── main.py                  
+├── requirements.txt         
+├── config.json              
+├── templates/
+│   └── index.html          
+└── brain/
+    ├── engine.py            
+    ├── scraper.py           
+    └── exporter.py          <-- NEW: Active file delivery matrix
