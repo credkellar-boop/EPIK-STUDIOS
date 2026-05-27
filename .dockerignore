@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+
+# Environment Variables (CRITICAL for security)
+.env
+.env.local
+.env.development.
+
+# IDE / Editor Files
+.vscode/
+.idea/
+
+# Logs and Data
+*.log
+*.sqlite
+data/
+downloads/
