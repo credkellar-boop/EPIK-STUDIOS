@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎬 EPIC-STUDIO'S
+# 🎬 EPIK-STUDIO'S
 **The Elite AI Automation Layer for FL Studio**
 
 [![CI Pipeline](https://img.shields.io/github/actions/workflow/status/credkellar-boop/EPIK-STUDIOS/main.yml?branch=main&label=Build&style=flat-square)](https://github.com/credkellar-boop/EPIK-STUDIOS/actions)
