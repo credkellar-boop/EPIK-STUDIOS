@@ -8,4 +8,4 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/credkellar-boop/EPIK-STUDIOS"
 
 [dependencies]
-# Your project dependencies (like reqwest, serde, or tokio) go here
+tokio = { version = "1.0", features = ["full"] }
