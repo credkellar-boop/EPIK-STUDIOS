@@ -1,0 +1,11 @@
+[package]
+name = "epik-studios" # Crate names must be lowercase
+version = "0.1.0"
+edition = "2021"
+authors = ["Credkellar <Credkellar@gmail.com>"]
+description = "An AI automation layer for FL Studio powered by Gemini to scrape DAW scripts and music production methods."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/credkellar-boop/EPIK-STUDIOS"
+
+[dependencies]
+# Your project dependencies (like reqwest, serde, or tokio) go here
